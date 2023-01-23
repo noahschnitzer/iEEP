@@ -1,4 +1,5 @@
-//console.log('hello world');
+
+
 
 fetch('./elements.json')
     .then((response) => response.json())
@@ -11,12 +12,13 @@ function formatData(json_in){
 	edx_data_out = [];
 	// format EDX data into long repr with .Z, .E, .descr
 	for(let zt = 0; zt < json_in.length; zt++){
-		//console.log(json_in[zt])
+		console.log(json_in[zt])
 		for(const peak in json_in[zt].EDS){
 			if(json_in[zt].EDS[peak]!== null){
 				edx_data_out.push({
 					'Z':json_in[zt].Z,
 					'E':json_in[zt].EDS[peak],
+					'line':peak,
 					'descr':json_in[zt].Symbol +" " + peak
 				});
 			}
@@ -26,6 +28,9 @@ function formatData(json_in){
 	return(edx_data_out);
 }
 
+// based off of https://d3-graph-gallery.com/graph/interactivity_zoom.html and https://d3-graph-gallery.com/graph/scatter_tooltip.html
+// should look in to https://wrobstory.github.io/2013/11/D3-brush-and-tooltip.html
+// for a better (?) approach...
 function visualizeData(formattedData){
 	//console.log(formattedData);
 	var margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -35,6 +40,24 @@ function visualizeData(formattedData){
 
     var default_extent_x = 123000;
     var default_extent_y = 104;
+
+      // Color scale: give me a specie name, I return a color
+	var color = d3.scaleOrdinal()
+	    .domain(["Ka1","Ka2","Kb1","La1","La2","Lb1","Lb2","Lg1","Ma1" ])
+	    .range([
+	    	"#c568b4", //Ka1
+	    	"#8261cc", //Ka2
+	    	"#688bcd", //Kb1
+	    	"#4bb193", //La1
+	    	"#74b74b", //La2
+	    	"#70823a", //Lb1
+	    	"#c79642", //Lb2
+	    	"#c95c3f", //Lg1
+	    	"#c65073", //Ma1
+		]);
+	    //.range([ "#3182bd", "#6baed6","#756bb1","#9e9ac8", "#7b4173","#a55194","#843c39","#31a354"])
+
+
 
     var svg = d3.select("#plotEDX")
   		.append("svg")
@@ -102,7 +125,7 @@ function visualizeData(formattedData){
       	.attr("cx", function (d) { return x(d.E); } )
       	.attr("cy", function (d) { return y(d.Z); } )
       	.attr("r", 4)
-      	.style("fill", "gray")
+      	.style("fill", function (d) { return color(d.line) } ) //.style("fill", "gray")
       	.style("opacity", 1.)
       	.style("stroke","none")//.style("stroke", "white")
       	.on("mouseover", function(event,d) {      
@@ -118,7 +141,7 @@ function visualizeData(formattedData){
 	        tooltipdiv.transition()        
 	            .duration(500)      
 	            .style("opacity", 0);  
-	        d3.select(this).style("fill", "gray"); 
+	        d3.select(this).style("fill", function (d) { return color(d.line) } ) //.style("fill", "gray"); 
 	    });
 
     // A function that set idleTimeOut to null
