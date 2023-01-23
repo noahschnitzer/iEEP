@@ -27,98 +27,81 @@ function formatData(json_in){
 }
 
 function visualizeData(formattedData){
-	console.log(formattedData);
-}
-/*
-
-
-<script>
-
-// set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 460 - margin.left - margin.right,
+	//console.log(formattedData);
+	var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 1000 - margin.left - margin.right,
     height = 450 - margin.top - margin.bottom;
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
 
-//Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/2_TwoNum.csv", function(data) {
+    var svg = d3.select("#plotEDX")
+  		.append("svg")
+    	.attr("width", width + margin.left + margin.right)
+    	.attr("height", height + margin.top + margin.bottom)
+  		.append("g")
+    		.attr("transform",
+          		"translate(" + margin.left + "," + margin.top + ")");
+    // Add X axis
+    var x = d3.scaleLinear()
+    	.domain([0, 123000])
+    	.range([ 0, width ]);
+  	svg.append("g")
+    	.attr("transform", "translate(0," + height + ")")
+    	.call(d3.axisBottom(x));
+	// Add Y axis
+	var y = d3.scaleLinear()
+	    .domain([0, 104])
+	    .range([ height, 0]);
+	svg.append("g")
+	    .call(d3.axisLeft(y));
 
-  // Add X axis
-  var x = d3.scaleLinear()
-    .domain([0, 3000])
-    .range([ 0, width ]);
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
-
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([0, 400000])
-    .range([ height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
-
-  // Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
-  // Its opacity is set to 0: we don't see it by default.
-  var tooltip = d3.select("#my_dataviz")
-    .append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "1px")
-    .style("border-radius", "5px")
-    .style("padding", "10px")
+	//add tooltip
+	/*var tooltip = d3.select("#plotEDX")
+	    .append("div")
+	    .style("opacity", 0)
+	    .attr("class", "tooltip")
+	    .style("background-color", "white")
+	    .style("border", "solid")
+	    .style("border-width", "1px")
+	    .style("border-radius", "5px")
+	    .style("padding", "10px")
+    	.style("position", "absolute")*/
+    var tooltipdiv = d3.select("#plotEDX").append("div")   
+        .attr("class", "tooltip")  
+        .style("position","absolute")             
+        .style("opacity", 0)
+        .style("background-color", "white")
+	    .style("border", "solid")
+	    .style("border-width", "1px")
+	    .style("border-radius", "5px")
+	    //.style("padding", "10px")
 
 
-
-  // A function that change this tooltip when the user hover a point.
-  // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
-  var mouseover = function(d) {
-    tooltip
-      .style("opacity", 1)
-  }
-
-  var mousemove = function(d) {
-    tooltip
-      .html("The exact value of<br>the Ground Living area is: " + d.GrLivArea)
-      .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
-      .style("top", (d3.mouse(this)[1]) + "px")
-  }
-
-  // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
-  var mouseleave = function(d) {
-    tooltip
-      .transition()
-      .duration(200)
-      .style("opacity", 0)
-  }
-
-  // Add dots
-  svg.append('g')
+	// Add dots
+	svg.append('g')
     .selectAll("dot")
-    .data(data.filter(function(d,i){return i<50})) // the .filter part is just to keep a few dots on the chart, not all of them
+    .data(formattedData)
     .enter()
     .append("circle")
-      .attr("cx", function (d) { return x(d.GrLivArea); } )
-      .attr("cy", function (d) { return y(d.SalePrice); } )
-      .attr("r", 7)
-      .style("fill", "#69b3a2")
-      .style("opacity", 0.3)
-      .style("stroke", "white")
-    .on("mouseover", mouseover )
-    .on("mousemove", mousemove )
-    .on("mouseleave", mouseleave )
+      	.attr("cx", function (d) { return x(d.E); } )
+      	.attr("cy", function (d) { return y(d.Z); } )
+      	.attr("r", 4)
+      	.style("fill", "gray")
+      	.style("opacity", 1.)
+      	.style("stroke","none")//.style("stroke", "white")
+      	.on("mouseover", function(event,d) {      
+           	tooltipdiv.transition()        
+            .duration(200)      
+            .style("opacity", 1.);      
+            tooltipdiv .html(d.descr+ " " + d.E)  
+                        .style("left", (event.pageX+50) + "px")     
+                        .style("top", (event.pageY +10) + "px");
+            d3.select(this).style("fill", "black");    //.attr("r", 10)
+            })                  
+	    .on("mouseout", function(event,d) {       
+	        tooltipdiv.transition()        
+	            .duration(500)      
+	            .style("opacity", 0);  
+	        d3.select(this).style("fill", "gray"); 
+	    });
 
-})
-
-</script>
-*/
+}
