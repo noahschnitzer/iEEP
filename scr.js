@@ -86,6 +86,13 @@ function visualizeData(formattedData){
 	var scatter = svg.append('g')
     	.attr("clip-path", "url(#clip)")
 
+	// Add the brushing
+    scatter
+    	.append("g")
+      		.attr("class", "brush")
+      		.call(brush);
+
+
 	// Add dots
 	scatter
     .selectAll("dot")
@@ -114,11 +121,6 @@ function visualizeData(formattedData){
 	        d3.select(this).style("fill", "gray"); 
 	    });
 
-	// Add the brushing
-    scatter
-    	.append("g")
-      		.attr("class", "brush")
-      		.call(brush);
     // A function that set idleTimeOut to null
 	var idleTimeout
 	function idled() { idleTimeout = null; }
