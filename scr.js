@@ -33,6 +33,9 @@ function visualizeData(formattedData){
     height = 450 - margin.top - margin.bottom;
 
 
+    var default_extent_x = 123000;
+    var default_extent_y = 104;
+
     var svg = d3.select("#plotEDX")
   		.append("svg")
     	.attr("width", width + margin.left + margin.right)
@@ -42,29 +45,18 @@ function visualizeData(formattedData){
           		"translate(" + margin.left + "," + margin.top + ")");
     // Add X axis
     var x = d3.scaleLinear()
-    	.domain([0, 123000])
+    	.domain([0, default_extent_x])
     	.range([ 0, width ]);
-  	svg.append("g")
+  	var xAxis = svg.append("g")
     	.attr("transform", "translate(0," + height + ")")
     	.call(d3.axisBottom(x));
 	// Add Y axis
 	var y = d3.scaleLinear()
-	    .domain([0, 104])
+	    .domain([0, default_extent_y])
 	    .range([ height, 0]);
 	svg.append("g")
 	    .call(d3.axisLeft(y));
-
-	//add tooltip
-	/*var tooltip = d3.select("#plotEDX")
-	    .append("div")
-	    .style("opacity", 0)
-	    .attr("class", "tooltip")
-	    .style("background-color", "white")
-	    .style("border", "solid")
-	    .style("border-width", "1px")
-	    .style("border-radius", "5px")
-	    .style("padding", "10px")
-    	.style("position", "absolute")*/
+	// Add tooltip (div)
     var tooltipdiv = d3.select("#plotEDX").append("div")   
         .attr("class", "tooltip")  
         .style("position","absolute")             
@@ -76,8 +68,26 @@ function visualizeData(formattedData){
 	    //.style("padding", "10px")
 
 
+	// For zooming/brushing
+	// Add a clipPath: everything out of this area won't be drawn.
+  	var clip = svg.append("defs").append("svg:clipPath")
+		.attr("id", "clip")
+		.append("svg:rect")
+		.attr("width", width )
+		.attr("height", height )
+		.attr("x", 0)
+		.attr("y", 0);
+
+	// Add brushing
+	var brush = d3.brushX()    // Add the brush feature using the d3.brush function
+		.extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+		.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+
+	var scatter = svg.append('g')
+    	.attr("clip-path", "url(#clip)")
+
 	// Add dots
-	svg.append('g')
+	scatter
     .selectAll("dot")
     .data(formattedData)
     .enter()
@@ -103,5 +113,38 @@ function visualizeData(formattedData){
 	            .style("opacity", 0);  
 	        d3.select(this).style("fill", "gray"); 
 	    });
+
+	// Add the brushing
+    scatter
+    	.append("g")
+      		.attr("class", "brush")
+      		.call(brush);
+    // A function that set idleTimeOut to null
+	var idleTimeout
+	function idled() { idleTimeout = null; }
+
+	// A function that update the chart for given boundaries
+	function updateChart(event) {
+
+	extent = event.selection
+
+	// If no selection, back to initial coordinate. Otherwise, update X axis domain
+	if(!extent){
+	  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+	  x.domain([ 0,default_extent_x])
+	}else{
+	  x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+	  scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+	}
+
+	// Update axis and circle position
+	xAxis.transition().duration(1000).call(d3.axisBottom(x))
+	scatter
+	  .selectAll("circle")
+	  .transition().duration(1000)
+	  .attr("cx", function (d) { return x(d.E); } )
+	  .attr("cy", function (d) { return y(d.Z); } )
+
+	}
 
 }
