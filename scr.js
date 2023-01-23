@@ -19,7 +19,7 @@ function formatData(json_in){
 					'Z':json_in[zt].Z,
 					'E':json_in[zt].EDS[peak],
 					'line':peak,
-					'descr':json_in[zt].Symbol +" " + peak
+					'descr':json_in[zt].Symbol +"-" + peak
 				});
 			}
 		}
@@ -33,7 +33,7 @@ function formatData(json_in){
 // for a better (?) approach...
 function visualizeData(formattedData){
 	//console.log(formattedData);
-	var margin = {top: 10, right: 30, bottom: 30, left: 60},
+	var margin = {top: 10, right: 30, bottom: 50, left: 60},
     width = 1000 - margin.left - margin.right,
     height = 450 - margin.top - margin.bottom;
 
@@ -84,7 +84,7 @@ function visualizeData(formattedData){
         .attr("class", "tooltip")  
         .style("position","absolute")             
         .style("opacity", 0)
-        .style("background-color", "white")
+        .style("background-color", "#666666")
 	    .style("border", "solid")
 	    .style("border-width", "1px")
 	    .style("border-radius", "5px")
@@ -132,10 +132,11 @@ function visualizeData(formattedData){
            	tooltipdiv.transition()        
             .duration(200)      
             .style("opacity", 1.);      
-            tooltipdiv .html(d.descr+ " " + d.E)  
+            tooltipdiv .html(d.descr+ ": " + d.E + " eV")  
                         .style("left", (event.pageX+50) + "px")     
-                        .style("top", (event.pageY +10) + "px");
-            d3.select(this).style("fill", "black");    //.attr("r", 10)
+                        .style("top", (event.pageY +10) + "px")
+                        .style("border-color",color(d.line));
+            d3.select(this).style("fill", "white");    //.attr("r", 10)
             })                  
 	    .on("mouseout", function(event,d) {       
 	        tooltipdiv.transition()        
@@ -144,6 +145,23 @@ function visualizeData(formattedData){
 	        d3.select(this).style("fill", function (d) { return color(d.line) } ) //.style("fill", "gray"); 
 	    });
 
+
+	// Add X axis label:
+	svg.append("text")
+	    .attr("text-anchor", "middle")
+	    .attr("x", width/2)
+	    .attr("y", height + margin.top + 30)
+	    .text("Energy (eV)");
+
+	// Y axis label:
+	svg.append("text")
+	    .attr("text-anchor", "middle")
+	    .attr("transform", "rotate(-90)")
+	    .attr("y", -margin.left+20)
+	    .attr("x", 0 - (height / 2)) //-margin.top
+	    .text("Atomic Number")
+
+
     // A function that set idleTimeOut to null
 	var idleTimeout
 	function idled() { idleTimeout = null; }
@@ -151,24 +169,24 @@ function visualizeData(formattedData){
 	// A function that update the chart for given boundaries
 	function updateChart(event) {
 
-	extent = event.selection
+		extent = event.selection
 
-	// If no selection, back to initial coordinate. Otherwise, update X axis domain
-	if(!extent){
-	  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-	  x.domain([ 0,default_extent_x])
-	}else{
-	  x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
-	  scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
-	}
+		// If no selection, back to initial coordinate. Otherwise, update X axis domain
+		if(!extent){
+		  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+		  x.domain([ 0,default_extent_x])
+		}else{
+		  x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+		  scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+		}
 
-	// Update axis and circle position
-	xAxis.transition().duration(1000).call(d3.axisBottom(x))
-	scatter
-	  .selectAll("circle")
-	  .transition().duration(1000)
-	  .attr("cx", function (d) { return x(d.E); } )
-	  .attr("cy", function (d) { return y(d.Z); } )
+		// Update axis and circle position
+		xAxis.transition().duration(1000).call(d3.axisBottom(x))
+		scatter
+		  .selectAll("circle")
+		  .transition().duration(1000)
+		  .attr("cx", function (d) { return x(d.E); } )
+		  .attr("cy", function (d) { return y(d.Z); } )
 
 	}
 
