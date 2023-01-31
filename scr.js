@@ -7,9 +7,40 @@ fetch('./elements.json')
     .then((formattedData) => visualizeData(formattedData));
 
 
+function textfieldChange() {
+	curE = Number(document.getElementById("E_search").value)
+	curdE = Number(document.getElementById("dE_search").value)
+	matches = findCloseMatches( curE*1000, curdE*1000 )
+
+	textResult = ""
+
+	for (let it=0; it<matches.length; it++ ){
+		matchE = (matches[it].E/1000).toFixed(4);
+		textResult += matches[it].descr + ": " + matchE +" keV<br>"
+	}
+	document.getElementById("E_Results").innerHTML = textResult
+
+
+}
+
+function findCloseMatches( curE, dE ) {
+	
+	inds = [];
+	matches = [];
+	for( let it=0; it<edx_data_out.length; it++ ) {
+		if (Math.abs(edx_data_out[it].E-curE)< dE) {
+			inds.push(it);
+			matches.push(edx_data_out[it])
+		}
+	}
+
+	return(matches)
+}
 
 function formatData(json_in){
 	edx_data_out = [];
+	edx_energies = [];
+	json_out = json_in
 	// format EDX data into long repr with .Z, .E, .descr
 	for(let zt = 0; zt < json_in.length; zt++){
 		console.log(json_in[zt])
@@ -21,6 +52,7 @@ function formatData(json_in){
 					'line':peak,
 					'descr':json_in[zt].Symbol +"-" + peak
 				});
+				edx_energies.push(json_in[zt].EDS[peak] )
 			}
 		}
 		

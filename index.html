@@ -10,7 +10,27 @@
             <p>Click and drag to zoom in to an energy range, double click to reset. </p>
             <div id='plotEDX'></div>
         </div>
+        <div>
+            Search EDS Edges
+        </div>
+        <div>
+            <input type="text" 
+                    style="text-align:right;" 
+                    id="E_search" 
+                    value="0"
+                    size= 3
+                    oninput="textfieldChange()">
+            <span>&#177;</span>
+            <input type="text" 
+                    style="text-align:right;" 
+                    id="dE_search" 
+                    value="0.1" 
+                    size = 3
+                    oninput="textfieldChange()">keV
+        </div>
+        <div id="E_Results">
 
+        </div>
 
         <a href='https://github.com/noahschnitzer/iEEP'>Site source</a>
         <a href='https://github.com/sukhsung/elements'>Data source</a>
