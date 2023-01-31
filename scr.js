@@ -7,6 +7,7 @@ fetch('./elements.json')
     .then((formattedData) => visualizeData(formattedData));
 
 
+
 function textfieldChange() {
 	curE = Number(document.getElementById("E_search").value)
 	curdE = Number(document.getElementById("dE_search").value)
@@ -68,8 +69,15 @@ function formatData(json_in){
 // for a better (?) approach...
 function visualizeData(formattedData){
 	//console.log(formattedData);
-	var margin = {top: 10, right: 30, bottom: 50, left: 60},
-    width = 1000 - margin.left - margin.right,
+	var margin = {top: 10, right: 30, bottom: 50, left: 60}
+
+	if (window.innerWidth>1200) {
+		width = 1000 - margin.left - margin.right;
+	} else {
+		width = window.innerWidth*0.9 - margin.left - margin.right;
+	}
+
+
     height = 450 - margin.top - margin.bottom;
 
 
@@ -94,7 +102,7 @@ function visualizeData(formattedData){
 
 
 
-    var svg = d3.select("#plotEDX")
+    svg = d3.select("#plotEDX")
   		.append("svg")
     	.attr("width", width + margin.left + margin.right)
     	.attr("height", height + margin.top + margin.bottom)

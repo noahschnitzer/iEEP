@@ -11,6 +11,30 @@ input {
   background-color: #333333;
 }
 
+/* #plotEDX {
+  width : 0.9vw;
+} */
+
 #plotEDX sub {
   background-color: #666666 ;
+}
+
+
+.textcenter{
+  text-align: center;
+}
+
+.footer{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.searchfield{
+  text-align:right;
+  font-size: 1.5em;
+}
+
+#E_Results{
+  font-size: 1.5em;
 }
