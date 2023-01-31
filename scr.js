@@ -16,7 +16,9 @@ function textfieldChange() {
 
 	for (let it=0; it<matches.length; it++ ){
 		matchE = (matches[it].E/1000).toFixed(4);
-		textResult += matches[it].descr + ": " + matchE +" keV<br>"
+		descr = matches[it].descr
+		// descr = descr.slice(0, descr.length-1)+"<sub>"+descr.slice(descr.length-1)+"</sub>"
+		textResult += descr + ": " + matchE +" keV<br>"
 	}
 	document.getElementById("E_Results").innerHTML = textResult
 
@@ -50,7 +52,8 @@ function formatData(json_in){
 					'Z':json_in[zt].Z,
 					'E':json_in[zt].EDS[peak],
 					'line':peak,
-					'descr':json_in[zt].Symbol +"-" + peak
+					// 'descr':json_in[zt].Symbol +"-" + peak
+					'descr':json_in[zt].Symbol +"-" + peak.slice(0, peak.length-1)+"<sub>"+peak.slice(peak.length-1)+"</sub>"
 				});
 				edx_energies.push(json_in[zt].EDS[peak] )
 			}
