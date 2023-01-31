@@ -6,3 +6,11 @@
 text {
     fill: #FFFFFF;
 }
+
+input {
+  background-color: #333333;
+}
+
+#plotEDX sub {
+  background-color: #666666 ;
+}
