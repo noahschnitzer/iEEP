@@ -8,18 +8,18 @@ fetch('./elements.json')
 
 
 function formatData(json_in){
-	edx_data_out = [];
-	edx_energies = [];
-	json_out = json_in
+	edx_data_out = []; // global
+	edx_energies = []; // global
+	json_out = json_in // global
 	// format EDX data into long repr with .Z, .E, .descr
 	for(let zt = 0; zt < json_in.length; zt++){
-		console.log(json_in[zt])
 		for(const peak in json_in[zt].EDS){
 			if(json_in[zt].EDS[peak]!== null){
 				edx_data_out.push({
 					'Z':json_in[zt].Z,
 					'E':(json_in[zt].EDS[peak]/1000).toFixed(3),
 					'line':peak,
+					'symbol':json_in[zt].Symbol,
 					// 'descr':json_in[zt].Symbol +"-" + peak
 					'descr':json_in[zt].Symbol +"-" + peak.slice(0, peak.length-1)+"<sub>"+peak.slice(peak.length-1)+"</sub>"
 				});
@@ -34,22 +34,54 @@ function formatData(json_in){
 function filterData( ){
 	// get list of edge checkboxes
 	var chkbox = document.querySelectorAll("#filter_edge input[type='checkbox']");
-	var checked_edge = []
+	var checked_edge = [];
 	for (let it=0; it < chkbox.length; it ++){
 		if (chkbox[it].checked){
-			checked_edge.push( chkbox[it].name)
+			checked_edge.push( chkbox[it].name);
 		}
 	}
-	var filtered_data = []
+	var filtered_data = [];
 	for (let it=0; it < edx_data_out.length; it++){
 		if (checked_edge.includes(edx_data_out[it].line)){
-			filtered_data.push( edx_data_out[it] )
+			filtered_data.push( edx_data_out[it] );
 		}
 	}
 
-	visualizeData( filtered_data )
+	visualizeData( filtered_data );
+	tabulateData ( );
 	//return filtered_data
 }
+
+
+function tabulateData(){
+	let table_element = document.getElementById('tableEDX');
+	let table_body = document.getElementById('tableEDX_body');
+	for(let it =0; it < edx_data_out.length; it++){
+		console.log(edx_data_out[it]);
+		let row = table_body.insertRow();//document.createElement("tr");
+		// Element
+		let td = row.insertCell();
+		td.appendChild(document.createTextNode(edx_data_out[it].symbol));
+		//row.appendChild(document.createElement("td").appendChild());
+		// Z
+		td = row.insertCell();
+		td.appendChild(document.createTextNode(edx_data_out[it].Z));
+		// Edge
+		td = row.insertCell();
+		td.appendChild(document.createTextNode(edx_data_out[it].line));
+		// E
+		td = row.insertCell();
+		td.appendChild(document.createTextNode(edx_data_out[it].E));
+
+		//table_element.appendChild(row);
+
+	}
+
+	//https://mottie.github.io/tablesorter/docs/
+	$("#tableEDX").tablesorter();
+
+}
+
 
 // based off of https://d3-graph-gallery.com/graph/interactivity_zoom.html and https://d3-graph-gallery.com/graph/scatter_tooltip.html
 // should look in to https://wrobstory.github.io/2013/11/D3-brush-and-tooltip.html

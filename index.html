@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
+
+
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="/external_scripts/jquery-3.6.3.min.js"></script>
+        <script src="/external_scripts/jquery.tablesorter.min.js"></script>
+
+        <script type="text/javascript" src='scr.js'></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+
         <title>inElastic Energy Picker</title>
     </head>
     <body>
@@ -34,6 +44,23 @@
             </div>
         </div>
 
+        <div>
+            <h2> WIP table</h2>
+            <table id="tableEDX">
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Z</th>
+                        <th>Edge</th>
+                        <th>E</th>
+                    </tr>
+                </thead>
+                <tbody id="tableEDX_body">
+                    
+                </tbody>
+            </table>
+
+        </div>
         
         <div class="textcenter">
             <h2>Search EDS Edges</h2>
@@ -53,9 +80,6 @@
         <div class="footer textcenter">
             <a href='https://github.com/noahschnitzer/iEEP'>Site source</a>
             <a href='https://github.com/sukhsung/elements'>Data source</a>
-            <script src="https://d3js.org/d3.v7.min.js"></script>
-            <script type="text/javascript" src='scr.js'></script>
         </div>
-        <link rel="stylesheet" type="text/css" href="style.css">
     </body>
 </html>
