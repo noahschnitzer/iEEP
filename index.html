@@ -12,7 +12,28 @@
             <h2>EDX peak energies</h2>
             <p>Click and drag to zoom in to an energy range, double click to reset. </p>
             <div id='plotEDX' class="textcenter"></div>
+            <div id='filter_edge'>
+                <input type="checkbox" id="cb_Ka1" name="Ka1" onchange="filterData()" checked>
+                <label for="Ka1">Ka<sub>1</sub></label>
+                <input type="checkbox" id="cb_Ka2" name="Ka2" onchange="filterData()" >
+                <label for="Ka2">Ka<sub>2</sub></label>
+                <input type="checkbox" id="cb_Kb1" name="Kb1" onchange="filterData()">
+                <label for="Kb1">Kb<sub>1</sub></label>
+                <input type="checkbox" id="cb_La1" name="La1" onchange="filterData()" checked>
+                <label for="La1">La<sub>1</sub></label>
+                <input type="checkbox" id="cb_La2" name="La2" onchange="filterData()">
+                <label for="La2">La<sub>2</sub></label>
+                <input type="checkbox" id="cb_Lb1" name="Lb1" onchange="filterData()">
+                <label for="Lb1">Lb<sub>1</sub></label>
+                <input type="checkbox" id="cb_Lb2" name="Lb2" onchange="filterData()">
+                <label for="Lb2">Lb<sub>2</sub></label>
+                <input type="checkbox" id="cb_Lg1" name="Lg1" onchange="filterData()">
+                <label for="Lg1">Lg<sub>1</sub></label>
+                <input type="checkbox" id="cb_Ma1" name="Ma1" onchange="filterData()" checked>
+                <label for="Ma1">Ma<sub>1</sub></label>
+            </div>
         </div>
+
         
         <div class="textcenter">
             <h2>Search EDS Edges</h2>

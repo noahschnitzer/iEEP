@@ -1,44 +1,11 @@
-
-
-
 fetch('./elements.json')
     .then((response) => response.json())
     .then((json) => formatData(json))
-    .then((formattedData) => visualizeData(formattedData));
+	.then((formattedData) => filterData());
+	//.then((formattedData) => visualizeData(formattedData));
 
 
 
-function textfieldChange() {
-	curE = Number(document.getElementById("E_search").value)
-	curdE = Number(document.getElementById("dE_search").value)
-	matches = findCloseMatches( curE*1000, curdE*1000 )
-
-	textResult = ""
-
-	for (let it=0; it<matches.length; it++ ){
-		matchE = (matches[it].E/1000).toFixed(4);
-		descr = matches[it].descr
-		// descr = descr.slice(0, descr.length-1)+"<sub>"+descr.slice(descr.length-1)+"</sub>"
-		textResult += descr + ": " + matchE +" keV<br>"
-	}
-	document.getElementById("E_Results").innerHTML = textResult
-
-
-}
-
-function findCloseMatches( curE, dE ) {
-	
-	inds = [];
-	matches = [];
-	for( let it=0; it<edx_data_out.length; it++ ) {
-		if (Math.abs(edx_data_out[it].E-curE)< dE) {
-			inds.push(it);
-			matches.push(edx_data_out[it])
-		}
-	}
-
-	return(matches)
-}
 
 function formatData(json_in){
 	edx_data_out = [];
@@ -51,7 +18,7 @@ function formatData(json_in){
 			if(json_in[zt].EDS[peak]!== null){
 				edx_data_out.push({
 					'Z':json_in[zt].Z,
-					'E':json_in[zt].EDS[peak],
+					'E':(json_in[zt].EDS[peak]/1000).toFixed(3),
 					'line':peak,
 					// 'descr':json_in[zt].Symbol +"-" + peak
 					'descr':json_in[zt].Symbol +"-" + peak.slice(0, peak.length-1)+"<sub>"+peak.slice(peak.length-1)+"</sub>"
@@ -64,11 +31,33 @@ function formatData(json_in){
 	return(edx_data_out);
 }
 
+function filterData( ){
+	// get list of edge checkboxes
+	var chkbox = document.querySelectorAll("#filter_edge input[type='checkbox']");
+	var checked_edge = []
+	for (let it=0; it < chkbox.length; it ++){
+		if (chkbox[it].checked){
+			checked_edge.push( chkbox[it].name)
+		}
+	}
+	var filtered_data = []
+	for (let it=0; it < edx_data_out.length; it++){
+		if (checked_edge.includes(edx_data_out[it].line)){
+			filtered_data.push( edx_data_out[it] )
+		}
+	}
+
+	visualizeData( filtered_data )
+	//return filtered_data
+}
+
 // based off of https://d3-graph-gallery.com/graph/interactivity_zoom.html and https://d3-graph-gallery.com/graph/scatter_tooltip.html
 // should look in to https://wrobstory.github.io/2013/11/D3-brush-and-tooltip.html
 // for a better (?) approach...
 function visualizeData(formattedData){
-	//console.log(formattedData);
+
+	document.getElementById("plotEDX").innerHTML = "";
+
 	var margin = {top: 10, right: 30, bottom: 50, left: 60}
 
 	if (window.innerWidth>1200) {
@@ -80,10 +69,17 @@ function visualizeData(formattedData){
 
     height = 450 - margin.top - margin.bottom;
 
+	var max_E = 0;
+	for (let it = 0; it < formattedData.length; it++){
+		if (formattedData[it].E > max_E){
+			max_E = formattedData[it].E
+		}
+	}
 
-    var default_extent_x = 123000;
+
+    var default_extent_x = max_E+100;
     var default_extent_y = 104;
-
+	
       // Color scale: give me a specie name, I return a color
 	var color = d3.scaleOrdinal()
 	    .domain(["Ka1","Ka2","Kb1","La1","La2","Lb1","Lb2","Lg1","Ma1" ])
@@ -194,7 +190,7 @@ function visualizeData(formattedData){
 	    .attr("text-anchor", "middle")
 	    .attr("x", width/2)
 	    .attr("y", height + margin.top + 30)
-	    .text("Energy (eV)");
+	    .text("Energy (keV)");
 
 	// Y axis label:
 	svg.append("text")
@@ -233,4 +229,37 @@ function visualizeData(formattedData){
 
 	}
 
+}
+
+
+function textfieldChange() {
+	curE = Number(document.getElementById("E_search").value)
+	curdE = Number(document.getElementById("dE_search").value)
+	matches = findCloseMatches( curE, curdE )
+
+	textResult = ""
+
+	for (let it=0; it<matches.length; it++ ){
+		matchE = (matches[it].E);
+		descr = matches[it].descr
+		// descr = descr.slice(0, descr.length-1)+"<sub>"+descr.slice(descr.length-1)+"</sub>"
+		textResult += descr + ": " + matchE +" keV<br>"
+	}
+	document.getElementById("E_Results").innerHTML = textResult
+
+
+}
+
+function findCloseMatches( curE, dE ) {
+	
+	inds = [];
+	matches = [];
+	for( let it=0; it<edx_data_out.length; it++ ) {
+		if (Math.abs(edx_data_out[it].E-curE)< dE) {
+			inds.push(it);
+			matches.push(edx_data_out[it])
+		}
+	}
+
+	return(matches)
 }
