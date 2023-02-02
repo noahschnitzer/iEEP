@@ -39,7 +39,7 @@ input {
 /* D3 Plot Related */
 #plotRegion {
   margin-left: 0%;
-  width: 60%;
+  width: 65%;
 }
 #plotEDS {
   margin-left: 5%;
@@ -70,6 +70,7 @@ input {
 /* Table Related */
 #tableRegion {
   flex-grow: 1;
+  background-color: transparent;
 }
 #tableEDS {
   margin:auto;
@@ -82,6 +83,7 @@ thead th {
   height: 60vh;
   width: 100%;
   overflow-y:auto;
+  background-color: transparent;
 }
 .filterinput{
   width:3em;

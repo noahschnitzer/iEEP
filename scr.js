@@ -4,6 +4,9 @@ fetch('./elements.json')
 	.then( () => tabulateData() )
 	.then( () => update() ) // currently works off global...
 
+window.onresize = function(event) {
+	update()
+};
 
 function update() {
 	filterData( )
@@ -188,16 +191,16 @@ function visualizeData(formattedData){
 	document.getElementById("plotEDS").innerHTML = "";
 
 	var margin = {left: window.innerWidth*0.05, 
-				  right: window.innerHeight*0.0,
+				  right: window.innerWidth*0.0,
 				  top: window.innerWidth*0.0, 
 				  bottom: window.innerHeight*0.05}
 
-	if (window.innerWidth>1200) {
-		width = window.innerWidth*0.8 - margin.left - margin.right
-		height = window.innerHeight*0.5;
+	if (window.innerWidth>=1000) {
+		var width = window.innerWidth*0.6 - margin.left - margin.right
+		var height = window.innerHeight*0.5;
 	} else {
-		width = window.innerWidth*0.8 - margin.left - margin.right;
-		height = window.innerHeight*0.4;
+		var width = window.innerWidth*0.9 - margin.left - margin.right;
+		var height = window.innerHeight*0.4;
 	}
 
 
@@ -209,7 +212,6 @@ function visualizeData(formattedData){
 
 		}
 	}
-
 
     var default_extent_x = max_E;;
     var default_extent_y = 104;
@@ -231,13 +233,13 @@ function visualizeData(formattedData){
 
     svg = d3.select("#plotEDS")
   		.append("svg")
-    	// .attr("width", width + margin.left + margin.right)
-    	// .attr("height", height + margin.top + margin.bottom)
     	.attr("width", width + margin.left + margin.right)
     	.attr("height", height + margin.top + margin.bottom)
+		.attr("id", "d3svg")
   		.append("g")
     		.attr("transform",
           		"translate(" + margin.left + "," + margin.top + ")");
+	
     // Add X axis
     var x = d3.scaleLinear()
     	.domain([0, default_extent_x])
@@ -329,7 +331,7 @@ function visualizeData(formattedData){
 	svg.append("text")
 	    .attr("text-anchor", "middle")
 	    .attr("transform", "rotate(-90)")
-	    .attr("y", -margin.left+20)
+	    .attr("y", -margin.left+10)
 	    .attr("x", 0 - (height / 2)) //-margin.top
 	    .text("Atomic Number")
 
