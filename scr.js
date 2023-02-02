@@ -13,9 +13,13 @@ function toggleEDSEELS() {
 	if (document.getElementById("toggle_eels").checked) {
 		console.log( 'Switch to EELS' )
 		mode = "EELS"
+		unit = "eV"
 		spectrum_data = eels_data
 		spectrum_list = eels_list
 		document.getElementById("title").innerHTML = "<h2>EELS Energies</h2>"
+		document.getElementById("th_E_label").innerHTML = "E (eV)"
+		document.getElementById("Emin").value = 0
+		document.getElementById("Emax").value = 4966
 		document.getElementById("filter_EDS").setAttribute("class", "hide");
 		document.getElementById("filter_EELS").removeAttribute("class","hide");
 		document.getElementById("tableEDS_body").innerHTML = ""
@@ -23,9 +27,13 @@ function toggleEDSEELS() {
 	} else {
 		console.log( 'Switch to EDS' )
 		mode = "EDS"
+		unit = "keV"
 		spectrum_data = eds_data
 		spectrum_list = eds_list
 		document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>"
+		document.getElementById("th_E_label").innerHTML = "E (keV)"
+		document.getElementById("Emin").value = 0
+		document.getElementById("Emax").value = 98.439
 		document.getElementById("filter_EDS").removeAttribute("class","hide");
 		document.getElementById("filter_EELS").setAttribute("class", "hide");
 		document.getElementById("tableEDS_body").innerHTML = ""
@@ -84,7 +92,7 @@ function formatData(json_in){
 				}
 				eels_data.push({
 					'Z':json_in[zt].Z,
-					'E':(json_in[zt].EELS[peak]/1000).toFixed(3),
+					'E':json_in[zt].EELS[peak],
 					'scattering':peak,
 					'scattering_label': peak_label,
 					'symbol':json_in[zt].Symbol,
@@ -102,6 +110,7 @@ function formatData(json_in){
 	document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>"
 	document.getElementById("filter_EDS").removeAttribute("class","hide");
 	document.getElementById("filter_EELS").setAttribute("class", "hide");
+	unit = "keV"
 }
 
 function getCheckedEdges(){
@@ -318,7 +327,7 @@ function visualizeData(formattedData){
 	    .attr("text-anchor", "middle")
 	    .attr("x", width/2)
 	    .attr("y", height + margin.top + 30)
-	    .text("Energy (keV)");
+	    .text("Energy ("+unit+")");
 
 	// Y axis label:
 	svg.append("text")
@@ -338,6 +347,7 @@ function visualizeData(formattedData){
 
 		extent = event.selection
 
+
 		// If no selection, back to initial coordinate. Otherwise, update X axis domain
 		if(!extent){
 		  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
@@ -347,6 +357,11 @@ function visualizeData(formattedData){
 		  scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
 		}
 
+		let Erange = x.domain()		
+		document.getElementById("Emin").value = Erange[0]
+		document.getElementById("Emax").value = Erange[1]
+		console.log(x.domain())
+
 		// Update axis and circle position
 		xAxis.transition().duration(1000).call(d3.axisBottom(x))
 		scatter
@@ -354,6 +369,9 @@ function visualizeData(formattedData){
 		  .transition().duration(1000)
 		  .attr("cx", function (d) { return x(d.E); } )
 		  .attr("cy", function (d) { return y(d.Z); } )
+
+
+		tableFilterChange();
 
 	}
 
