@@ -50,7 +50,7 @@ input {
 }
 
 
-@media (max-width: 1000px) {
+@media (max-width: 1000px) and (orientation: portrait) {
   #mainDiv {
     display:block;
   }
