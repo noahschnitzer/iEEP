@@ -11,12 +11,35 @@ input {
   background-color: #333333;
 }
 
-/* #plotEDX {
-  width : 0.9vw;
-} */
+.hide {
+  display: none;
+}
 
-#plotEDX sub {
+#mainDiv {
+  width: 100%;
+  display:flex;
+}
+
+#plotRegion {
+  margin-left: 5%;
+  width: 60%;
+}
+#tableRegion {
+  flex-grow: 1;
+  margin-right: 5%;
+}
+
+#plotEDS sub {
   background-color: #666666 ;
+}
+
+#tableEDS {
+  margin:auto;
+}
+
+thead th {
+  position: sticky; /* make the table heads sticky */
+  top: 0px; /* table head will be placed from the top of the table and sticks to it */
 }
 
 #tablecont {

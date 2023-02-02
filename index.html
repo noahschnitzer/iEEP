@@ -11,70 +11,116 @@
         <link rel="stylesheet" type="text/css" href="style.css">
 
 
-        <title>inElastic Energy Picker</title>
+        <title>inelastic.info</title>
     </head>
     <body>
-        <div class="textcenter">
+        <div class="textcenter" id = "header">
             <h1>inElastic Energy Picker</h1>
             <br></br>
             <div class="button r" id="button-1">
-                <input type="checkbox" class="checkbox" />
+                <input type="checkbox" class="checkbox" id ="toggle_eels" onchange="toggleEDSEELS()"/>
                 <div class="knobs"></div>
                 <div class="layer"></div>
             </div>
         </div>
         
-        <div class="textcenter">
-            <h2>EDX peak energies</h2>
-            <p>Click and drag to zoom in to an energy range, double click to reset. </p>
-            <div id='plotEDX' class="textcenter"></div>
-            <div id='filter_edge'>
-                <input type="checkbox" id="cb_Ka1" name="Ka1" onchange="filterData()" checked>
-                <label for="Ka1">Ka<sub>1</sub></label>
-                <input type="checkbox" id="cb_Ka2" name="Ka2" onchange="filterData()" >
-                <label for="Ka2">Ka<sub>2</sub></label>
-                <input type="checkbox" id="cb_Kb1" name="Kb1" onchange="filterData()">
-                <label for="Kb1">Kb<sub>1</sub></label>
-                <input type="checkbox" id="cb_La1" name="La1" onchange="filterData()" checked>
-                <label for="La1">La<sub>1</sub></label>
-                <input type="checkbox" id="cb_La2" name="La2" onchange="filterData()">
-                <label for="La2">La<sub>2</sub></label>
-                <input type="checkbox" id="cb_Lb1" name="Lb1" onchange="filterData()">
-                <label for="Lb1">Lb<sub>1</sub></label>
-                <input type="checkbox" id="cb_Lb2" name="Lb2" onchange="filterData()">
-                <label for="Lb2">Lb<sub>2</sub></label>
-                <input type="checkbox" id="cb_Lg1" name="Lg1" onchange="filterData()">
-                <label for="Lg1">Lg<sub>1</sub></label>
-                <input type="checkbox" id="cb_Ma1" name="Ma1" onchange="filterData()" checked>
-                <label for="Ma1">Ma<sub>1</sub></label>
+        <div id = "mainDiv">
+            <div class="textcenter" id = "plotRegion">
+                <div id='title'><h2>EDS energies</h2></div>
+                <p>Click and drag to zoom in to an energy range, double click to reset. </p>
+                <div id='plotEDS' class="textcenter"></div>
+                <div id='filter_EDS'>
+                    <input type="checkbox" id="cb_eds_Ka1" name="Ka1" onchange="filterData()" checked>
+                    <label for="Ka1">K<sub>α1</sub></label>
+                    <input type="checkbox" id="cb_eds_Ka2" name="Ka2" onchange="filterData()" >
+                    <label for="Ka2">Kα<sub>2</sub></label>
+                    <input type="checkbox" id="cb_eds_Kb1" name="Kb1" onchange="filterData()">
+                    <label for="Kb1">Kβ<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eds_La1" name="La1" onchange="filterData()" checked>
+                    <label for="La1">Lα<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eds_La2" name="La2" onchange="filterData()">
+                    <label for="La2">Lα<sub>2</sub></label>
+                    <input type="checkbox" id="cb_eds_Lb1" name="Lb1" onchange="filterData()">
+                    <label for="Lb1">Lβ<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eds_Lb2" name="Lb2" onchange="filterData()">
+                    <label for="Lb2">Lβ<sub>2</sub></label>
+                    <input type="checkbox" id="cb_eds_Lg1" name="Lg1" onchange="filterData()">
+                    <label for="Lg1">Lγ<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eds_Ma1" name="Ma1" onchange="filterData()" checked>
+                    <label for="Ma1">Mα<sub>1</sub></label>
+                </div>
+
+                <div id='filter_EELS'>
+                    <input type="checkbox" id="cb_eels_K" name="K" onchange="filterData()" checked>
+                    <label for="K">K<sub></sub></label>
+
+                    <input type="checkbox" id="cb_eels_L1" name="L1" onchange="filterData()">
+                    <label for="L1">L<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eels_L2" name="L2" onchange="filterData()" checked>
+                    <label for="L2">L<sub>2</sub></label>
+                    <input type="checkbox" id="cb_eels_L3" name="L3" onchange="filterData()" checked>
+                    <label for="L3">L<sub>3</sub></label>
+
+                    <input type="checkbox" id="cb_eels_M1" name="M1" onchange="filterData()">
+                    <label for="M1">M<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eels_M2" name="M2" onchange="filterData()" checked>
+                    <label for="M2">M<sub>2</sub></label>
+                    <input type="checkbox" id="cb_eels_M3" name="M3" onchange="filterData()" checked>
+                    <label for="M3">M<sub>3</sub></label>
+                    <input type="checkbox" id="cb_eels_M4" name="M4" onchange="filterData()">
+                    <label for="M4">M<sub>4</sub></label>
+                    <input type="checkbox" id="cb_eels_M5" name="M5" onchange="filterData()">
+                    <label for="M5">M<sub>5</sub></label>
+
+                    <input type="checkbox" id="cb_eels_N1" name="N1" onchange="filterData()">
+                    <label for="N1">N<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eels_N23" name="N23" onchange="filterData()">
+                    <label for="N23">N<sub>2,3</sub></label>
+                    <input type="checkbox" id="cb_eels_N4" name="N4" onchange="filterData()">
+                    <label for="N4">N<sub>4</sub></label>
+                    <input type="checkbox" id="cb_eels_N5" name="N5" onchange="filterData()">
+                    <label for="N5">N<sub>5</sub></label>
+                    <input type="checkbox" id="cb_eels_N6" name="N6" onchange="filterData()">
+                    <label for="N6">N<sub>6</sub></label>
+                    <input type="checkbox" id="cb_eels_N7" name="N7" onchange="filterData()">
+                    <label for="N7">N<sub>7</sub></label>
+
+                    <input type="checkbox" id="cb_eels_O1" name="O1" onchange="filterData()">
+                    <label for="N1">N<sub>1</sub></label>
+                    <input type="checkbox" id="cb_eels_O23" name="O23" onchange="filterData()">
+                    <label for="O23">N<sub>2,3</sub></label>
+                    <input type="checkbox" id="cb_eels_O45" name="O45" onchange="filterData()">
+                    <label for="O45">N<sub>4,5</sub></label>
+                </div>
+            </div>
+
+            <div class="textcenter" id = "tableRegion">
+                <h2> WIP table</h2>
+                <div id="tablecont">
+                    <table id="tableEDS">
+                        <thead>
+                            <tr>
+                                <th>Element<br>&nbsp</th>
+                                <th>Z<br>
+                                    <input type="text" value=0  id="Zmin" class="filterinput" oninput="tableFilterChange()" ></input>
+                                    <input type="text" value=95  id="Zmax" class="filterinput" oninput="tableFilterChange()" ></input>
+                                </th>
+                                <th>Edge<br>&nbsp</th>
+                                <th> <span id="th_E_label">E (keV)</span><br>
+                                    <input type="text" value=0  id="Emin" class="filterinput" oninput="tableFilterChange()" ></input>
+                                    <input type="text" value=112  id="Emax" class="filterinput" oninput="tableFilterChange()" ></input>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableEDS_body">                            
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
         </div>
-
-        <div id="tablecont">
-            <h2> WIP table</h2>
-            <table id="tableEDX">
-                <thead>
-                    <tr>
-                        <th>Element</th>
-                        <th>Z
-                            <input type="text" value=0  id="Zmin" class="filterinput" oninput="tableFilterChange()" ></input>
-                            <input type="text" value=95  id="Zmax" class="filterinput" oninput="tableFilterChange()" ></input>
-                        </th>
-                        <th>Edge</th>
-                        <th>E
-                            <input type="text" value=0  id="Emin" class="filterinput" oninput="tableFilterChange()" ></input>
-                            <input type="text" value=112  id="Emax" class="filterinput" oninput="tableFilterChange()" ></input>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="tableEDX_body">
-                    
-                </tbody>
-            </table>
-
-        </div>
         
-        <div class="textcenter">
+        <!-- <div class="textcenter">
             <h2>Search EDS Edges</h2>
             <div>
                 <input type="text" id="E_search" class="searchfield"
@@ -87,7 +133,7 @@
             </div>
             <div id="E_Results" class="textcenter">
             </div>
-        </div>
+        </div> -->
 
         <div class="footer textcenter">
             <a href='https://github.com/noahschnitzer/iEEP'>Site source</a>

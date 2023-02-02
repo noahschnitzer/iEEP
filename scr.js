@@ -1,40 +1,117 @@
 fetch('./elements.json')
     .then((response) => response.json())
     .then((json) => formatData(json))
-    .then( ()=> tabulateData ()) // currently works off global...
-	.then(() => filterData()); // currently works off global...
-	//.then((formattedData) => visualizeData(formattedData));
+	.then( () => tabulateData() )
+	.then( () => update() ) // currently works off global...
 
 
+function update() {
+	filterData( )
+}
 
+function toggleEDSEELS() {
+	if (document.getElementById("toggle_eels").checked) {
+		console.log( 'Switch to EELS' )
+		mode = "EELS"
+		spectrum_data = eels_data
+		spectrum_list = eels_list
+		document.getElementById("title").innerHTML = "<h2>EELS Energies</h2>"
+		document.getElementById("filter_EDS").setAttribute("class", "hide");
+		document.getElementById("filter_EELS").removeAttribute("class","hide");
+		document.getElementById("tableEDS_body").innerHTML = ""
+		tabulateData()
+	} else {
+		console.log( 'Switch to EDS' )
+		mode = "EDS"
+		spectrum_data = eds_data
+		spectrum_list = eds_list
+		document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>"
+		document.getElementById("filter_EDS").removeAttribute("class","hide");
+		document.getElementById("filter_EELS").setAttribute("class", "hide");
+		document.getElementById("tableEDS_body").innerHTML = ""
+		tabulateData()
+	}
+
+	update()
+	
+}
 
 function formatData(json_in){
-	edx_data_out = []; // global
-	edx_energies = []; // global
 	json_out = json_in // global
-	// format EDX data into long repr with .Z, .E, .descr
+
+	eds_data = []; // global
+	eels_data = []; // global
+
+	eds_list = ["Ka1", "Ka2", "Kb1", "La1", "La2", "Lb1", "Lb2", "Lg1", "Ma1"]; //global
+	eels_list = ["K", "L1", "L2", "L3", "M1", "M2", "M3", "M4", "M5", "N1", "N4","N5", "N6", "N7", "N23", "O1", "O23", "O45"]; //global
+
+	// format eds data into long repr with .Z, .E, .descr
 	for(let zt = 0; zt < json_in.length; zt++){
+
 		for(const peak in json_in[zt].EDS){
 			if(json_in[zt].EDS[peak]!== null){
-				edx_data_out.push({
+				let peak_label = peak[0]
+				if (peak[1] == "a") {
+					peak_label += "α"
+				}
+				else if (peak[1] == "b") {
+					peak_label += "β"
+				}
+				else if (peak[1] == "g") {
+					peak_label += "γ"
+				}
+				peak_label += "<sub>"+peak[2]+"</sub>"
+				eds_data.push({
 					'Z':json_in[zt].Z,
 					'E':(json_in[zt].EDS[peak]/1000).toFixed(3),
-					'line':peak,
+					'scattering':peak,
+					'scattering_label': peak_label,
 					'symbol':json_in[zt].Symbol,
-					// 'descr':json_in[zt].Symbol +"-" + peak
-					'descr':json_in[zt].Symbol +"-" + peak.slice(0, peak.length-1)+"<sub>"+peak.slice(peak.length-1)+"</sub>"
+					'descr':json_in[zt].Symbol +"-" + peak_label
 				});
-				edx_energies.push(json_in[zt].EDS[peak] )
+			}
+		}
+
+		for(const peak in json_in[zt].EELS){
+			if(json_in[zt].EELS[peak]!== null){
+				let peak_label
+				if (peak.length == 1) {
+					peak_label = peak
+				} else if (peak.length == 2) {
+					peak_label = peak[0] + "<sub>"+peak[1]+"</sub>"
+				} else if (peak.length == 3) {
+					peak_label = peak[0] + "<sub>"+peak[1]+","+peak[2]+"</sub>"
+				}
+				eels_data.push({
+					'Z':json_in[zt].Z,
+					'E':(json_in[zt].EELS[peak]/1000).toFixed(3),
+					'scattering':peak,
+					'scattering_label': peak_label,
+					'symbol':json_in[zt].Symbol,
+					'descr':json_in[zt].Symbol +"-" + peak_label
+				});
 			}
 		}
 		
 	}
-	return(edx_data_out);
+
+
+	mode = "EDS"
+	spectrum_data = eds_data
+	spectrum_list = eds_list
+	document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>"
+	document.getElementById("filter_EDS").removeAttribute("class","hide");
+	document.getElementById("filter_EELS").setAttribute("class", "hide");
 }
 
 function getCheckedEdges(){
 	// get list of edge checkboxes
-	var chkbox = document.querySelectorAll("#filter_edge input[type='checkbox']");
+	if (mode == "EDS") {
+		var chkbox = document.querySelectorAll("#filter_EDS input[type='checkbox']");
+	}
+	else if (mode == "EELS") {
+		var chkbox = document.querySelectorAll("#filter_EELS input[type='checkbox']");
+	}
 	var checked_edge = [];
 	for (let it=0; it < chkbox.length; it ++){
 		if (chkbox[it].checked){
@@ -47,12 +124,11 @@ function getCheckedEdges(){
 function filterData( ){
 	let checked_edge = getCheckedEdges();
 	var filtered_data = [];
-	for (let it=0; it < edx_data_out.length; it++){
-		if (checked_edge.includes(edx_data_out[it].line)){
-			filtered_data.push( edx_data_out[it] );
+	for (let it=0; it < spectrum_data.length; it++){
+		if (checked_edge.includes(spectrum_data[it].scattering)){
+			filtered_data.push( spectrum_data[it] );
 		}
 	}
-
 	visualizeData( filtered_data );
 	tableFilterChange(checked_edge);
 	//return filtered_data
@@ -60,33 +136,37 @@ function filterData( ){
 
 
 function tabulateData(){
-	let table_element = document.getElementById('tableEDX');
-	let table_body = document.getElementById('tableEDX_body');
-	for(let it =0; it < edx_data_out.length; it++){
-		console.log(edx_data_out[it]);
+	let table_element = document.getElementById('tableEDS');
+	let table_body = document.getElementById('tableEDS_body');
+	//table_body.innerHTML = ""
+	for(let it =0; it < spectrum_data.length; it++){
+		//console.log(spectrum_data[it]);
 		let row = table_body.insertRow();//document.createElement("tr");
 		row.classList.add("filterablerow")
 		// Element
 		let td = row.insertCell();
-		td.appendChild(document.createTextNode(edx_data_out[it].symbol));
+		td.appendChild(document.createTextNode(spectrum_data[it].symbol));
 		// Z
 		td = row.insertCell();
-		td.appendChild(document.createTextNode(edx_data_out[it].Z));
+		td.appendChild(document.createTextNode(spectrum_data[it].Z));
 		//td.classList.add("Zentry");
 		// Edge
 		td = row.insertCell();
-		td.appendChild(document.createTextNode(edx_data_out[it].line));
+		//td.appendChild(document.createTextNode(eds_data[it].scattering_label));
+		td.innerHTML = (spectrum_data[it].scattering_label)
 		// E
 		td = row.insertCell();
-		td.appendChild(document.createTextNode(edx_data_out[it].E));
+		td.appendChild(document.createTextNode(spectrum_data[it].E));
+		td = row.insertCell();
+		td.appendChild(document.createTextNode(spectrum_data[it].scattering));
+		td.setAttribute("class","hide")
 		//td.classList.add("Eentry");
-
 		//table_element.appendChild(row);
 
 	}
 
 	//https://mottie.github.io/tablesorter/docs/
-	$("#tableEDX").tablesorter();
+	$("#tableeds").tablesorter();
 
 }
 
@@ -96,32 +176,41 @@ function tabulateData(){
 // for a better (?) approach...
 function visualizeData(formattedData){
 
-	document.getElementById("plotEDX").innerHTML = "";
+	document.getElementById("plotEDS").innerHTML = "";
 
-	var margin = {top: 10, right: 30, bottom: 50, left: 60}
+	// var margin = {top: 10, right: 30, bottom: 50, left: 60}
 
-	if (window.innerWidth>1200) {
-		width = 1000 - margin.left - margin.right;
-	} else {
-		width = window.innerWidth*0.9 - margin.left - margin.right;
-	}
+	var margin = {left: window.innerWidth*0.05, 
+				  right: window.innerHeight*0.1,
+				  top: window.innerWidth*0.0, 
+				  bottom: window.innerHeight*0.05}
 
+	// if (window.innerWidth>1200) {
+	// 	width = 1000 - margin.left - margin.right;
+	// } else {
+	// 	width = window.innerWidth*0.9 - margin.left - margin.right;
+	// }
 
-    height = 450 - margin.top - margin.bottom;
+	width = window.innerWidth*0.6 - margin.left - margin.right
+	height = window.innerHeight*0.5;
+
+    // height = 450 - margin.top - margin.bottom;
 
 	var max_E = 0;
 	for (let it = 0; it < formattedData.length; it++){
+
 		if (formattedData[it].E > max_E){
 			max_E = formattedData[it].E
+
 		}
 	}
 
 
-    var default_extent_x = max_E+100;
+    var default_extent_x = max_E;;
     var default_extent_y = 104;
 	
 	var color = d3.scaleOrdinal()
-	    .domain(["Ka1","Ka2","Kb1","La1","La2","Lb1","Lb2","Lg1","Ma1" ])
+	    .domain( spectrum_list )
 	    .range([
 	    	"#c568b4", //Ka1
 	    	"#8261cc", //Ka2
@@ -135,9 +224,10 @@ function visualizeData(formattedData){
 		]);
 
 
-
-    svg = d3.select("#plotEDX")
+    svg = d3.select("#plotEDS")
   		.append("svg")
+    	// .attr("width", width + margin.left + margin.right)
+    	// .attr("height", height + margin.top + margin.bottom)
     	.attr("width", width + margin.left + margin.right)
     	.attr("height", height + margin.top + margin.bottom)
   		.append("g")
@@ -157,7 +247,7 @@ function visualizeData(formattedData){
 	svg.append("g")
 	    .call(d3.axisLeft(y));
 	// Add tooltip (div)
-    var tooltipdiv = d3.select("#plotEDX").append("div")   
+    var tooltipdiv = d3.select("#plotEDS").append("div")   
         .attr("class", "tooltip")  
         .style("position","absolute")             
         .style("opacity", 0)
@@ -202,7 +292,7 @@ function visualizeData(formattedData){
       	.attr("cx", function (d) { return x(d.E); } )
       	.attr("cy", function (d) { return y(d.Z); } )
       	.attr("r", 4)
-      	.style("fill", function (d) { return color(d.line) } ) //.style("fill", "gray")
+      	.style("fill", function (d) { return color(d.scattering) } ) //.style("fill", "gray")
       	.style("opacity", 1.)
       	.style("stroke","none")//.style("stroke", "white")
       	.on("mouseover", function(event,d) {      
@@ -212,14 +302,14 @@ function visualizeData(formattedData){
             tooltipdiv .html(d.descr+ ": " + d.E + " eV")  
                         .style("left", (event.pageX+50) + "px")     
                         .style("top", (event.pageY +10) + "px")
-                        .style("border-color",color(d.line));
+                        .style("border-color",color(d.scattering));
             d3.select(this).style("fill", "white");    //.attr("r", 10)
             })                  
 	    .on("mouseout", function(event,d) {       
 	        tooltipdiv.transition()        
 	            .duration(500)      
 	            .style("opacity", 0);  
-	        d3.select(this).style("fill", function (d) { return color(d.line) } ) //.style("fill", "gray"); 
+	        d3.select(this).style("fill", function (d) { return color(d.scattering) } ) //.style("fill", "gray"); 
 	    });
 
 
@@ -278,6 +368,7 @@ function tableFilterChange(checked_edge){
 		checked_edge = getCheckedEdges();
 	}
 
+
 	let Zmin = Number(document.getElementById("Zmin").value);
 	let Zmax = Number(document.getElementById("Zmax").value);
 	let Emin = Number(document.getElementById("Emin").value);
@@ -289,12 +380,12 @@ function tableFilterChange(checked_edge){
 	//console.log(trs)
 
 	const setTrStyleDisplay = ({ style, children }) => {
-		let thisEdge = children[2].childNodes[0].data;
+		let thisEdge = children[4].childNodes[0].data;
 		let thisZ = Number(children[1].childNodes[0].data);
 		let thisE = Number(children[3].childNodes[0].data);
-		//console.log(thisZ);
-		let included_Z = (thisZ < Zmax) && (thisZ > Zmin);
-		let included_E = (thisE < Emax) && (thisE > Emin);
+
+		let included_Z = (thisZ <= Zmax) && (thisZ >= Zmin);
+		let included_E = (thisE <= Emax) && (thisE >= Emin);
 		let included = included_E && included_Z;
 		if(included_E && included_Z &&checked_edge.includes(thisEdge)){
 			style.display = '';
@@ -309,37 +400,4 @@ function tableFilterChange(checked_edge){
 	trs.forEach(setTrStyleDisplay)
 
 
-}
-
-
-function textfieldChange() {
-	curE = Number(document.getElementById("E_search").value)
-	curdE = Number(document.getElementById("dE_search").value)
-	matches = findCloseMatches( curE, curdE )
-
-	textResult = ""
-
-	for (let it=0; it<matches.length; it++ ){
-		matchE = (matches[it].E);
-		descr = matches[it].descr
-		// descr = descr.slice(0, descr.length-1)+"<sub>"+descr.slice(descr.length-1)+"</sub>"
-		textResult += descr + ": " + matchE +" keV<br>"
-	}
-	document.getElementById("E_Results").innerHTML = textResult
-
-
-}
-
-function findCloseMatches( curE, dE ) {
-	
-	inds = [];
-	matches = [];
-	for( let it=0; it<edx_data_out.length; it++ ) {
-		if (Math.abs(edx_data_out[it].E-curE)< dE) {
-			inds.push(it);
-			matches.push(edx_data_out[it])
-		}
-	}
-
-	return(matches)
 }
