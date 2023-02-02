@@ -187,23 +187,19 @@ function visualizeData(formattedData){
 
 	document.getElementById("plotEDS").innerHTML = "";
 
-	// var margin = {top: 10, right: 30, bottom: 50, left: 60}
-
 	var margin = {left: window.innerWidth*0.05, 
-				  right: window.innerHeight*0.1,
+				  right: window.innerHeight*0.0,
 				  top: window.innerWidth*0.0, 
 				  bottom: window.innerHeight*0.05}
 
-	// if (window.innerWidth>1200) {
-	// 	width = 1000 - margin.left - margin.right;
-	// } else {
-	// 	width = window.innerWidth*0.9 - margin.left - margin.right;
-	// }
+	if (window.innerWidth>1200) {
+		width = window.innerWidth*0.8 - margin.left - margin.right
+		height = window.innerHeight*0.5;
+	} else {
+		width = window.innerWidth*0.8 - margin.left - margin.right;
+		height = window.innerHeight*0.4;
+	}
 
-	width = window.innerWidth*0.6 - margin.left - margin.right
-	height = window.innerHeight*0.5;
-
-    // height = 450 - margin.top - margin.bottom;
 
 	var max_E = 0;
 	for (let it = 0; it < formattedData.length; it++){

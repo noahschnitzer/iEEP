@@ -6,71 +6,88 @@
 text {
     fill: #FFFFFF;
 }
-
 input {
   background-color: #333333;
 }
-
 .hide {
   display: none;
 }
-
-#mainDiv {
-  width: 100%;
-  display:flex;
-}
-
-#plotRegion {
-  margin-left: 5%;
-  width: 60%;
-}
-#tableRegion {
-  flex-grow: 1;
-  margin-right: 5%;
-}
-
-#plotEDS sub {
-  background-color: #666666 ;
-}
-
-#tableEDS {
-  margin:auto;
-}
-
-thead th {
-  position: sticky; /* make the table heads sticky */
-  top: 0px; /* table head will be placed from the top of the table and sticks to it */
-}
-
-#tablecont {
-  height: 500px;
-  width:500px;
-  overflow-y:auto;
-}
-
 .textcenter{
   text-align: center;
 }
-
 .footer{
   position: fixed;
   bottom: 0;
   width: 100%;
 }
 
+
+/* -------------- */
+/* Header */
+#header h1 {
+  margin-bottom: 0;
+}
+
+/* --------------- */
+/* Main Block */
+#mainDiv {
+  width: 100%;
+  display:flex;
+}
+
+/* --------------- */
+/* D3 Plot Related */
+#plotRegion {
+  margin-left: 0%;
+  width: 60%;
+}
+#plotEDS {
+  margin-left: 5%;
+}
+
+#plotEDS sub {
+  background-color: #666666 ;
+}
+
+
+@media (max-width: 1000px) {
+  #mainDiv {
+    display:block;
+  }
+
+  #plotRegion {
+    width: 100%;
+  }
+
+  #plotEDS {
+    margin-left: 0%;
+  }
+}
+
+
+
+/* --------------- */
+/* Table Related */
+#tableRegion {
+  flex-grow: 1;
+}
+#tableEDS {
+  margin:auto;
+}
+thead th {
+  position: sticky; /* make the table heads sticky */
+  top: 0px; /* table head will be placed from the top of the table and sticks to it */
+}
+#tablecont {
+  height: 60vh;
+  width: 100%;
+  overflow-y:auto;
+}
 .filterinput{
   width:3em;
 }
 
-.searchfield{
-  text-align:right;
-  font-size: 1.5em;
-}
-
-#E_Results{
-  font-size: 1.5em;
-}
-
+/* --------------*/
 /* Toggle Button */
 .button-cover,
 .knobs,
