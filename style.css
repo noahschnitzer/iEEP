@@ -19,6 +19,11 @@ input {
   background-color: #666666 ;
 }
 
+#tablecont {
+  height: 500px;
+  width:500px;
+  overflow-y:auto;
+}
 
 .textcenter{
   text-align: center;
@@ -28,6 +33,10 @@ input {
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+.filterinput{
+  width:3em;
 }
 
 .searchfield{

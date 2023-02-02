@@ -59,19 +59,21 @@ function tabulateData(){
 	for(let it =0; it < edx_data_out.length; it++){
 		console.log(edx_data_out[it]);
 		let row = table_body.insertRow();//document.createElement("tr");
+		row.classList.add("filterablerow")
 		// Element
 		let td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].symbol));
-		//row.appendChild(document.createElement("td").appendChild());
 		// Z
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].Z));
+		td.classList.add("Zentry");
 		// Edge
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].line));
 		// E
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].E));
+		td.classList.add("Eentry");
 
 		//table_element.appendChild(row);
 
@@ -112,7 +114,6 @@ function visualizeData(formattedData){
     var default_extent_x = max_E+100;
     var default_extent_y = 104;
 	
-      // Color scale: give me a specie name, I return a color
 	var color = d3.scaleOrdinal()
 	    .domain(["Ka1","Ka2","Kb1","La1","La2","Lb1","Lb2","Lg1","Ma1" ])
 	    .range([
@@ -126,7 +127,6 @@ function visualizeData(formattedData){
 	    	"#c95c3f", //Lg1
 	    	"#c65073", //Ma1
 		]);
-	    //.range([ "#3182bd", "#6baed6","#756bb1","#9e9ac8", "#7b4173","#a55194","#843c39","#31a354"])
 
 
 
@@ -260,6 +260,41 @@ function visualizeData(formattedData){
 		  .attr("cy", function (d) { return y(d.Z); } )
 
 	}
+
+}
+
+//Note: if table columns are changed indices in setTrStyleDisplay will have to be changed!
+// currently, column 1 : Z, column 4 : E
+function filterChange(){
+	let Zmin = Number(document.getElementById("Zmin").value);
+	let Zmax = Number(document.getElementById("Zmax").value);
+	let Emin = Number(document.getElementById("Emin").value);
+	let Emax = Number(document.getElementById("Emax").value);
+
+
+	const trs = document.querySelectorAll('.filterablerow');
+	tempglobal = trs;
+	//console.log(trs)
+
+	const setTrStyleDisplay = ({ style, children }) => {
+		let thisZ = Number(children[1].childNodes[0].data);
+		let thisE = Number(children[3].childNodes[0].data);
+		//console.log(thisZ);
+		let included_Z = (thisZ < Zmax) && (thisZ > Zmin);
+		let included_E = (thisE < Emax) && (thisE > Emin);
+		let included = included_E && included_Z;
+		if(included_E&& included_Z){
+			style.display = '';
+		}
+		else{
+			style.display='none';
+		}
+	/*style.display = isFound([
+	  ...children // <-- All columns
+	]) ? '' : 'none' */
+	}
+	trs.forEach(setTrStyleDisplay)
+
 
 }
 
