@@ -1,7 +1,8 @@
 fetch('./elements.json')
     .then((response) => response.json())
     .then((json) => formatData(json))
-	.then((formattedData) => filterData());
+    .then( ()=> tabulateData ()) // currently works off global...
+	.then(() => filterData()); // currently works off global...
 	//.then((formattedData) => visualizeData(formattedData));
 
 
@@ -31,7 +32,7 @@ function formatData(json_in){
 	return(edx_data_out);
 }
 
-function filterData( ){
+function getCheckedEdges(){
 	// get list of edge checkboxes
 	var chkbox = document.querySelectorAll("#filter_edge input[type='checkbox']");
 	var checked_edge = [];
@@ -40,6 +41,11 @@ function filterData( ){
 			checked_edge.push( chkbox[it].name);
 		}
 	}
+	return checked_edge;
+}
+
+function filterData( ){
+	let checked_edge = getCheckedEdges();
 	var filtered_data = [];
 	for (let it=0; it < edx_data_out.length; it++){
 		if (checked_edge.includes(edx_data_out[it].line)){
@@ -48,7 +54,7 @@ function filterData( ){
 	}
 
 	visualizeData( filtered_data );
-	tabulateData ( );
+	tableFilterChange(checked_edge);
 	//return filtered_data
 }
 
@@ -66,14 +72,14 @@ function tabulateData(){
 		// Z
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].Z));
-		td.classList.add("Zentry");
+		//td.classList.add("Zentry");
 		// Edge
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].line));
 		// E
 		td = row.insertCell();
 		td.appendChild(document.createTextNode(edx_data_out[it].E));
-		td.classList.add("Eentry");
+		//td.classList.add("Eentry");
 
 		//table_element.appendChild(row);
 
@@ -265,7 +271,13 @@ function visualizeData(formattedData){
 
 //Note: if table columns are changed indices in setTrStyleDisplay will have to be changed!
 // currently, column 1 : Z, column 4 : E
-function filterChange(){
+//todo
+function tableFilterChange(checked_edge){
+	if(checked_edge === undefined)
+	{
+		checked_edge = getCheckedEdges();
+	}
+
 	let Zmin = Number(document.getElementById("Zmin").value);
 	let Zmax = Number(document.getElementById("Zmax").value);
 	let Emin = Number(document.getElementById("Emin").value);
@@ -277,13 +289,14 @@ function filterChange(){
 	//console.log(trs)
 
 	const setTrStyleDisplay = ({ style, children }) => {
+		let thisEdge = children[2].childNodes[0].data;
 		let thisZ = Number(children[1].childNodes[0].data);
 		let thisE = Number(children[3].childNodes[0].data);
 		//console.log(thisZ);
 		let included_Z = (thisZ < Zmax) && (thisZ > Zmin);
 		let included_E = (thisE < Emax) && (thisE > Emin);
 		let included = included_E && included_Z;
-		if(included_E&& included_Z){
+		if(included_E && included_Z &&checked_edge.includes(thisEdge)){
 			style.display = '';
 		}
 		else{
