@@ -19,10 +19,11 @@ function toggleEDSEELS() {
         unit = "eV";
         spectrum_data = eels_data;
         spectrum_list = eels_list;
+		EmaxVal = 4966;
         document.getElementById("title").innerHTML = "<h2>EELS Energies</h2>";
         document.getElementById("th_E_label").innerHTML = "E (eV)";
         document.getElementById("Emin").value = 0;
-        document.getElementById("Emax").value = 4966;
+        document.getElementById("Emax").value = EmaxVal;
         document.getElementById("filter_EDS").setAttribute("class", "hide");
         document.getElementById("filter_EELS").removeAttribute("class", "hide");
         document.getElementById("tableEDS_body").innerHTML = "";
@@ -33,10 +34,11 @@ function toggleEDSEELS() {
         unit = "keV";
         spectrum_data = eds_data;
         spectrum_list = eds_list;
+		EmaxVal = 98.439
         document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>";
         document.getElementById("th_E_label").innerHTML = "E (keV)";
         document.getElementById("Emin").value = 0;
-        document.getElementById("Emax").value = 98.439;
+        document.getElementById("Emax").value = EmaxVal;
         document.getElementById("filter_EDS").removeAttribute("class", "hide");
         document.getElementById("filter_EELS").setAttribute("class", "hide");
         document.getElementById("tableEDS_body").innerHTML = "";
@@ -124,6 +126,7 @@ function formatData(json_in) {
     mode = "EDS";
     spectrum_data = eds_data;
     spectrum_list = eds_list;
+	EmaxVal = 98.439;
     document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>";
     document.getElementById("filter_EDS").removeAttribute("class", "hide");
     document.getElementById("filter_EELS").setAttribute("class", "hide");
@@ -410,6 +413,21 @@ function tableFilterChange(checked_edge) {
     let Zmax = Number(document.getElementById("Zmax").value);
     let Emin = Number(document.getElementById("Emin").value);
     let Emax = Number(document.getElementById("Emax").value);
+
+	if (isNaN(Emin)) {
+		Emin = 0
+	}
+	if (isNaN(Emax)) {
+		Emax = EmaxVal
+	}
+	if (isNaN(Zmin)) {
+		Zmin = 0
+	}
+	if (isNaN(Zmax)) {
+		Zmax = 95
+	}
+
+
 
     const trs = document.querySelectorAll(".filterablerow");
     tempglobal = trs;
