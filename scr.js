@@ -127,6 +127,7 @@ function formatData(json_in) {
     spectrum_data = eds_data;
     spectrum_list = eds_list;
 	EmaxVal = 98.439;
+	ZmaxVal = 95;
     document.getElementById("title").innerHTML = "<h2>EDS Energies</h2>";
     document.getElementById("filter_EDS").removeAttribute("class", "hide");
     document.getElementById("filter_EELS").setAttribute("class", "hide");
@@ -196,7 +197,7 @@ function tabulateData() {
     }
 
     //https://mottie.github.io/tablesorter/docs/
-    $("#tableeds").tablesorter();
+    $("#tableEDS").tablesorter();
 }
 
 // based off of https://d3-graph-gallery.com/graph/interactivity_zoom.html and https://d3-graph-gallery.com/graph/scatter_tooltip.html
@@ -228,7 +229,7 @@ function visualizeData(formattedData) {
     }
 
     var default_extent_x = max_E;
-    var default_extent_y = 97;
+    var default_extent_y = ZmaxVal; // switched from 97... why not 95? offset is better handled seperately?
 
     var color = d3.scaleOrdinal().domain(spectrum_list).range([
         "#c568b4", //Ka1
@@ -362,17 +363,24 @@ function visualizeData(formattedData) {
         if (!extent) {
             if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
             var Erange =[0, default_extent_x];
+            var Zrange =[0,default_extent_y];
+            console.log('no extent');
         } else {
             var Erange = [x.invert(extent[0]), x.invert(extent[1])];
+            var Zrange = [Number( document.getElementById("Zmin").value ), Number( document.getElementById("Zmax").value ) ];
             scatter.select(".brush").call(brush.move, null); // This remove the grey brush area as soon as the selection has been done
         }
 
         document.getElementById("Emin").value = Erange[0];
         document.getElementById("Emax").value = Erange[1];
-		var Zmin = Number( document.getElementById("Zmin").value );
-		var Zmax = Number( document.getElementById("Zmax").value );
 
-		updateAxis( Erange, [Zmin, Zmax] )
+        document.getElementById("Zmin").value = Zrange[0];
+        document.getElementById("Zmax").value = Zrange[1];
+
+		//var Zmin = Number( document.getElementById("Zmin").value );
+		//var Zmax = Number( document.getElementById("Zmax").value );
+
+		updateAxis( Erange,Zrange); //[Zmin, Zmax] )
         tableFilterChange();
     }
 }
@@ -382,12 +390,15 @@ function updateAxis( Erange, Zrange ) {
 	x.domain( Erange )
 	xAxis.transition().duration(1000).call(d3.axisBottom(x));
 
-	// if (Zrange[0]>2) {
-	// 	Zrange[0] -=2
-	// }
-	// Zrange[1] +=2
-	// y.domain( Zrange )
-	// yAxis.transition().duration(1000).call(d3.axisLeft(y));
+	 if (Zrange[0]>2) {
+	 	Zrange[0] -=2
+	 }
+
+	 if (Zrange[1] < ZmaxVal){
+	 	Zrange[1] +=2
+	}
+	 y.domain( Zrange )
+	 yAxis.transition().duration(1000).call(d3.axisLeft(y));
 
 	scatter
 	.selectAll("circle")

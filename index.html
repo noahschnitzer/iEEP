@@ -2,7 +2,7 @@
 <html>
     <head>
 
-
+        <meta charset="utf-8">
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="./external_scripts/jquery-3.6.3.min.js"></script>
         <script src="./external_scripts/jquery.tablesorter.min.js"></script>
@@ -95,12 +95,12 @@
             </div>
 
             <div class="textcenter" id = "tableRegion">
-                <h2> WIP table</h2>
+                <h2> Scattering Table</h2>
                 <div id="tablecont">
                     <table id="tableEDS">
                         <thead>
                             <tr>
-                                <th>Element<br>&nbsp</th>
+                                <th>Element<br><input type="text" placeholder="Ti,O"  id="ElementSelector" class="filterinput" oninput="tableFilterChange()" ></input></th>
                                 <th>Z<br>
                                     <input type="text" value=0  id="Zmin" class="filterinput" oninput="tableFilterChange()" ></input>
                                     <input type="text" value=95 id="Zmax" class="filterinput" oninput="tableFilterChange()" ></input>
