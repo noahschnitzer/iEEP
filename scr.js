@@ -413,6 +413,19 @@ function updateAxis( Erange, Zrange ) {
 	});
 }
 
+// parse a string containing a series of delimited elemental symbols into a list of atomic symbols
+// perhaps more efficeint to transform to atomic numbers, but would need lookup table...
+function parseElementString(elementString){
+	let split_string = elementString.split(",").map(function(item) {
+	    return item.trim();
+	}).filter(item => item.trim() != '');
+	/*if (split_string.length === 1){
+		split_string = [];
+	}*/
+
+	return split_string;
+}
+
 //Note: if table columns are changed indices in setTrStyleDisplay will have to be changed!
 // currently, column 1 : Z, column 4 : E
 //todo
@@ -421,6 +434,9 @@ function tableFilterChange(checked_edge) {
         checked_edge = getCheckedEdges();
     }
 
+    let elementSelectorString = document.getElementById("ElementSelector").value;
+    let elementList = parseElementString(elementSelectorString);
+    console.log(elementList);
     let Zmin = Number(document.getElementById("Zmin").value);
     let Zmax = Number(document.getElementById("Zmax").value);
     let Emin = Number(document.getElementById("Emin").value);
@@ -449,11 +465,17 @@ function tableFilterChange(checked_edge) {
         let thisEdge = children[4].childNodes[0].data;
         let thisZ = Number(children[1].childNodes[0].data);
         let thisE = Number(children[3].childNodes[0].data);
+        let thisElem = children[0].childNodes[0].data;
 
         let included_Z = thisZ <= Zmax && thisZ >= Zmin;
         let included_E = thisE <= Emax && thisE >= Emin;
-        let included = included_E && included_Z;
-        if (included_E && included_Z && checked_edge.includes(thisEdge)) {
+        let included_elem = true;
+        if (elementList.length > 0)
+        {
+        	included_elem = elementList.includes(thisElem);
+        }
+        //let included = included_E && included_Z;
+        if (included_elem && included_E && included_Z && checked_edge.includes(thisEdge)) {
             style.display = "";
         } else {
             style.display = "none";
