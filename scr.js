@@ -198,6 +198,7 @@ function tabulateData() {
 
     //https://mottie.github.io/tablesorter/docs/
     $("#tableEDS").tablesorter();
+    $("#tableEDS").trigger("update");
 }
 
 // based off of https://d3-graph-gallery.com/graph/interactivity_zoom.html and https://d3-graph-gallery.com/graph/scatter_tooltip.html
